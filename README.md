@@ -26,3 +26,7 @@
 1. 스타캐치를 성공하였을 때의 스타포스 성공확률 변동량
 2. 스타포스 확률(성공, 실패, 파괴)
 3. 찬스타임(2번 실패시 한번은 반드시 성공)
+
+## 구현목록
+* 콘솔 명령창 ([Process.java] (https://github.com/ForteEscape/StarForce/blob/master/src/Process.java))
+* 소모된 메소와 장비 갯수를 가지고 있는 EquipInfo 클래스 ([EquipInfo.java] (https://github.com/ForteEscape/StarForce/blob/master/src/EquipInfo.java))

@@ -4,6 +4,7 @@ public class EquipInfo implements Comparable<EquipInfo>{ // make object which sa
     public int level;
     public int equipmentLv;
     public long spendMeso = 0; // save result data
+    public int spendEquip = 0; // save result data 2
 
     EquipInfo(int level, int equipmentLv){
         this.level = level;
