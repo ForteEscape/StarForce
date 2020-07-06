@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Process{
+public class Process{ // main
     static List<EquipInfo> equipmentList = new ArrayList<>();
 
     static double[] starForcePercentage = 
@@ -38,7 +38,7 @@ public class Process{
         System.out.println("StarForce Stimulation Application");
         System.out.println("input command");
 
-        while(true){
+        while(true){ // command line
             System.out.print("$ ");
             String cmd = command.nextLine();
 
@@ -76,6 +76,6 @@ public class Process{
     }
 
     static void startStimulation(int goalValue, int equipLevel, boolean isStarCatch, boolean isSaveDestroy, int stimulationNum){
-        
+
     }
 }

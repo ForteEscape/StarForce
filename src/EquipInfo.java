@@ -1,9 +1,9 @@
 package src;
 
-public class EquipInfo implements Comparable<EquipInfo>{
+public class EquipInfo implements Comparable<EquipInfo>{ // make object which save spended meso
     public int level;
     public int equipmentLv;
-    public long spendMeso = 0;
+    public long spendMeso = 0; // save result data
 
     EquipInfo(int level, int equipmentLv){
         this.level = level;
