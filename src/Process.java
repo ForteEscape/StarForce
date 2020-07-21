@@ -2,6 +2,7 @@ package src;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Process{ // main
@@ -25,6 +26,45 @@ public class Process{ // main
         0.07,   0.07,   0.194,  0.294,  0.396
     };
 
+    static int[] starForceMoney_140lv = 
+    {
+        110800, 220500, 330300, 440000, 549800, 
+        659600, 769300, 879100, 988800, 1098600,
+        8895400, 11250800, 13964700, 17057900, 20550500,
+        24462200, 28812500, 33620400, 38904500, 44683300,
+        50974700, 57796700
+    };
+
+    static int[] starForceMoney_150lv = 
+    {
+        136000, 271000, 406000, 541000, 676000,
+        811000, 946000, 1081000, 1216000, 1351000,
+        5470800, 6919400, 8588400, 10490600, 12638500,
+        30087200, 35437900, 41351400, 47850600, 54958200,
+        62696400, 71087200
+    };
+
+    static int[] starForceMoney_160lv =
+    {
+        164800, 328700, 492500, 656400, 820200,
+        984000, 1147900, 1311700, 1475600, 1639400,
+        6639400, 8397300, 10422900, 12731500, 15338200,
+        36514500, 43008300, 50185100, 58072700, 66698700,
+        76090000, 86273300
+    };
+
+    static int[] starForceMoney_200lv =
+    {
+        321000, 641000, 961000, 1281000, 1601000,
+        1921000, 2241000, 2561000, 2881000, 3201000,
+        12966500, 16400100, 20356300, 24865300, 29956500,
+        71316500, 83999600, 98016700, 113422300, 130270000,
+        148612400, 168501500
+    };
+
+    static boolean isStarCatch = false;
+    static boolean isSaveDestroy = false;
+
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
         Scanner command = new Scanner(System.in);
@@ -32,8 +72,6 @@ public class Process{ // main
         int goalValue; // goal starforce stage
         int equipLevel;
         int stimulationNum;
-        boolean isStarCatch = false;
-        boolean isSaveDestroy = false;
 
         System.out.println("StarForce Stimulation Application");
         System.out.println("input command");
@@ -76,6 +114,74 @@ public class Process{ // main
     }
 
     static void startStimulation(int goalValue, int equipLevel, boolean isStarCatch, boolean isSaveDestroy, int stimulationNum){
+        for(int i = 0; i<stimulationNum; i++){
+            equipmentList.add(new EquipInfo(equipLevel));
 
+            calcStarforce(equipmentList.get(i), goalValue, equipLevel);
+        }
+    }
+
+    static void calcStarforce(EquipInfo targetEquip, int goalLv, int equipLevel){
+        Random rand = new Random();
+        int chanceTimeCount = 0; // chancetime
+
+        while(targetEquip.sfLevel != goalLv && targetEquip.sfLevel < goalLv){ // 강화 부분
+            int starForceSeed = rand.nextInt(100);
+            boolean isdesroyed = false;
+
+            if(targetEquip.sfLevel >= 17){
+                isSaveDestroy = false;
+            }
+
+            if(starForceSeed >= starForcePercentage[targetEquip.sfLevel] * 100){ // fail start
+                if(targetEquip.sfLevel >= 12){ // calc destroy
+                    if(isSaveDestroy == false){
+                        int destroySeed = rand.nextInt(1000);
+
+                        if(destroySeed < destroyPercentage[targetEquip.sfLevel] * 1000){
+                            System.out.println("destroy");
+                            isdesroyed = true;
+                        }
+                    }
+                }
+
+                addMeso(targetEquip, targetEquip.equipmentLv); // add money
+
+                if(isdesroyed == false){
+                    targetEquip.sfLevel--;
+                }
+                else{
+                    targetEquip.sfLevel = 12;
+                    targetEquip.spendEquip++;
+                }
+
+                chanceTimeCount++;
+
+            } // fail end
+            else{ // success
+                addMeso(targetEquip, targetEquip.equipmentLv); // add money
+                targetEquip.sfLevel++;
+            }
+        }
+    }
+
+    static void addMeso(EquipInfo targetEquip, int equipmentLv){
+        switch(equipmentLv){
+            case 140 : 
+                targetEquip.spendMeso += starForceMoney_140lv[targetEquip.sfLevel];
+                break;
+
+            case 150 : 
+                targetEquip.spendMeso += starForceMoney_150lv[targetEquip.sfLevel];
+                break;
+            
+            case 160 :
+                targetEquip.spendMeso += starForceMoney_160lv[targetEquip.sfLevel];
+                break;
+            
+            case 200 :
+                targetEquip.spendMeso += starForceMoney_200lv[targetEquip.sfLevel];
+                break;
+        }
     }
 }
