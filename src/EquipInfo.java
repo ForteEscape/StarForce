@@ -6,13 +6,14 @@ public class EquipInfo implements Comparable<EquipInfo>{ // make object which sa
     public long spendMeso = 0; // save result data
     public int spendEquip = 0; // save result data 2
 
+    public static final int SIZE = 10000000;
+    public int realSize = 0;
+
+    public String[] logs = new String[SIZE];
+
     EquipInfo(int equipmentLv){
         sfLevel = 0;
         this.equipmentLv = equipmentLv;
-    }
-
-    public long getSpendMeso(){
-        return spendMeso;
     }
 
     public int compareTo(EquipInfo equip){

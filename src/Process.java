@@ -1,5 +1,7 @@
 package src;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -118,68 +120,145 @@ public class Process{ // main
             equipmentList.add(new EquipInfo(equipLevel));
 
             calcStarforce(equipmentList.get(i), goalValue, equipLevel);
+
+            printLog(equipmentList.get(i), i);
+        }
+    }
+
+    static void printLog(EquipInfo targetEquip, int tailNumber){
+        //String path = "C:/Users/sehunkim/Desktop/Logs";
+
+        System.out.println("===========RESULT=================");
+        System.out.println("equipment Lv : "+targetEquip.equipmentLv);
+        System.out.println("spend meso : "+targetEquip.spendMeso);
+        System.out.println("spend equipment : "+targetEquip.spendEquip);
+        System.out.println("count : "+targetEquip.realSize);
+
+        int index = targetEquip.realSize;
+
+        try{
+            FileWriter fw = new FileWriter("C:/Users/sehunkim/Desktop/Logs/output"+ tailNumber +".txt");
+
+            for(int i = 0; i<index; i++){
+                String str = targetEquip.logs[i]+"\r\n";
+                fw.write(str);
+            }
+
+            fw.close();
+        }
+        catch(IOException e){
+            e.getStackTrace();
+            System.out.println("cannot make file");
         }
     }
 
     static void calcStarforce(EquipInfo targetEquip, int goalLv, int equipLevel){
         Random rand = new Random();
         int chanceTimeCount = 0; // chancetime
+        boolean safeDestroy = isSaveDestroy;
 
-        while(targetEquip.sfLevel != goalLv && targetEquip.sfLevel < goalLv){ // 강화 부분
-            int starForceSeed = rand.nextInt(100);
+        int processCount = 0;
+
+        while(true){ // 강화 부분
+            if(targetEquip.sfLevel == goalLv) break;
+            
             boolean isdesroyed = false;
+            int starForceSeed = rand.nextInt(1000);
 
             if(targetEquip.sfLevel >= 17){
-                isSaveDestroy = false;
+               safeDestroy = false;
             }
 
-            if(starForceSeed >= starForcePercentage[targetEquip.sfLevel] * 100){ // fail start
+            if(chanceTimeCount == 2){ // chance time
+                addMeso(targetEquip, targetEquip.equipmentLv, safeDestroy);
+                targetEquip.sfLevel++;
+
+                targetEquip.logs[processCount] = "sucess! - chanceTime";
+                chanceTimeCount = 0;
+                processCount++;
+                
+                continue;
+            }
+
+            if(isStarCatch == true){
+                starForcePercentage[targetEquip.sfLevel] *= 1.05;
+            }
+
+
+            addMeso(targetEquip, targetEquip.equipmentLv, safeDestroy); // add money
+
+            if(starForceSeed >= starForcePercentage[targetEquip.sfLevel] * 1000){ // fail start
                 if(targetEquip.sfLevel >= 12){ // calc destroy
-                    if(isSaveDestroy == false){
+                    if(safeDestroy == false){
                         int destroySeed = rand.nextInt(1000);
 
                         if(destroySeed < destroyPercentage[targetEquip.sfLevel] * 1000){
-                            System.out.println("destroy");
                             isdesroyed = true;
                         }
                     }
                 }
 
-                addMeso(targetEquip, targetEquip.equipmentLv); // add money
-
                 if(isdesroyed == false){
+                    if(targetEquip.sfLevel <= 10){ // 10성 이하는 하락 없음
+                        continue;
+                    }
+
                     targetEquip.sfLevel--;
+                    chanceTimeCount++;
+
+                    targetEquip.logs[processCount] = "fail";
                 }
                 else{
                     targetEquip.sfLevel = 12;
                     targetEquip.spendEquip++;
+
+                    targetEquip.logs[processCount] = "destroy...";
                 }
-
-                chanceTimeCount++;
-
             } // fail end
             else{ // success
-                addMeso(targetEquip, targetEquip.equipmentLv); // add money
                 targetEquip.sfLevel++;
+
+                targetEquip.logs[processCount] = "success!";
+                chanceTimeCount = 0;
             }
+
+            processCount++;
         }
+
+        targetEquip.realSize = processCount;
     }
 
-    static void addMeso(EquipInfo targetEquip, int equipmentLv){
+    static void addMeso(EquipInfo targetEquip, int equipmentLv, boolean safeDestroy){
         switch(equipmentLv){
             case 140 : 
+
+                if(safeDestroy == true){
+                    targetEquip.spendMeso += starForceMoney_140lv[targetEquip.sfLevel];
+                }
                 targetEquip.spendMeso += starForceMoney_140lv[targetEquip.sfLevel];
                 break;
 
             case 150 : 
+
+                if(safeDestroy == true){
+                    targetEquip.spendMeso += starForceMoney_150lv[targetEquip.sfLevel];
+                }
                 targetEquip.spendMeso += starForceMoney_150lv[targetEquip.sfLevel];
                 break;
             
             case 160 :
+            
+                if(safeDestroy == true){
+                    targetEquip.spendMeso += starForceMoney_160lv[targetEquip.sfLevel];
+                }
                 targetEquip.spendMeso += starForceMoney_160lv[targetEquip.sfLevel];
                 break;
             
             case 200 :
+
+                if(safeDestroy == true){
+                    targetEquip.spendMeso += starForceMoney_200lv[targetEquip.sfLevel];
+                }
                 targetEquip.spendMeso += starForceMoney_200lv[targetEquip.sfLevel];
                 break;
         }
