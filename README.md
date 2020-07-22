@@ -22,7 +22,7 @@
 2. 해당 구간에서의 파괴횟수
 3. 유저가 선택한 옵션 표기, 시뮬레이션 횟수
 
-## 고려할 목록
+## 고려할 목록 - 모두 고려됨
 1. 스타캐치를 성공하였을 때의 스타포스 성공확률 변동량
 2. 스타포스 확률(성공, 실패, 파괴)
 3. 찬스타임(2번 실패시 한번은 반드시 성공)
@@ -30,3 +30,5 @@
 ## 구현목록.
 * 콘솔 명령창 ( [Process.java](https://github.com/ForteEscape/StarForce/blob/master/src/Process.java) )
 * 소모된 메소와 장비 갯수를 가지고 있는 EquipInfo 클래스 ( [EquipInfo.java](https://github.com/ForteEscape/StarForce/blob/master/src/EquipInfo.java) )
+* 유저 입력 데이터를 통하여 결과파일 ``` output.txt ``` 를 생성
+* 유저 입력 데이터를 통하여 결과 도출 구현(bug fix중)
