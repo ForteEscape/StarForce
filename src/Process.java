@@ -162,18 +162,21 @@ public class Process{ // main
         while(true){ // 강화 부분
             if(targetEquip.sfLevel == goalLv) break;
             
-            boolean isdesroyed = false;
             int starForceSeed = rand.nextInt(1000);
+            double fail_percentage = 1 - starForcePercentage[targetEquip.sfLevel] - destroyPercentage[targetEquip.sfLevel]; // fail
 
-            if(targetEquip.sfLevel >= 17){
+            if(targetEquip.sfLevel >= 17 || targetEquip.sfLevel < 12){
                safeDestroy = false;
+            }
+            else if(isSaveDestroy == true){
+                safeDestroy = true;
             }
 
             if(chanceTimeCount == 2){ // chance time
                 addMeso(targetEquip, targetEquip.equipmentLv, safeDestroy);
                 targetEquip.sfLevel++;
 
-                targetEquip.logs[processCount] = "sucess! - chanceTime";
+                targetEquip.logs[processCount] = "sucess! - chanceTime - "+targetEquip.sfLevel;
                 chanceTimeCount = 0;
                 processCount++;
                 
@@ -181,44 +184,43 @@ public class Process{ // main
             }
 
             if(isStarCatch == true){
-                starForcePercentage[targetEquip.sfLevel] *= 1.05;
+                fail_percentage *= 1.05;
             }
 
 
             addMeso(targetEquip, targetEquip.equipmentLv, safeDestroy); // add money
 
-            if(starForceSeed >= starForcePercentage[targetEquip.sfLevel] * 1000){ // fail start
-                if(targetEquip.sfLevel >= 12){ // calc destroy
-                    if(safeDestroy == false){
-                        int destroySeed = rand.nextInt(1000);
-
-                        if(destroySeed < destroyPercentage[targetEquip.sfLevel] * 1000){
-                            isdesroyed = true;
-                        }
-                    }
+            if(starForceSeed <= fail_percentage * 1000){ // fail start
+                if(targetEquip.sfLevel <= 10){
+                    targetEquip.logs[processCount] = "fail - "+targetEquip.sfLevel;
                 }
-
-                if(isdesroyed == false){
-                    if(targetEquip.sfLevel <= 10){ // 10성 이하는 하락 없음
-                        continue;
-                    }
-
+                else if(targetEquip.sfLevel == 15 || targetEquip.sfLevel == 20){ // safe zone
+                    targetEquip.logs[processCount] = "fail - "+targetEquip.sfLevel;
+                }
+                else{
                     targetEquip.sfLevel--;
                     chanceTimeCount++;
-
-                    targetEquip.logs[processCount] = "fail";
+                    targetEquip.logs[processCount] = "fail - "+targetEquip.sfLevel;
+                }
+            } // fail end
+            else if(starForceSeed >= 1000 - destroyPercentage[targetEquip.sfLevel]*1000){ // destroy
+                if(safeDestroy == true){
+                    targetEquip.sfLevel--;
+                    chanceTimeCount++;
+                    targetEquip.logs[processCount] = "fail - "+targetEquip.sfLevel;
                 }
                 else{
                     targetEquip.sfLevel = 12;
                     targetEquip.spendEquip++;
-
                     targetEquip.logs[processCount] = "destroy...";
+
+                    chanceTimeCount = 0;
                 }
-            } // fail end
+            }
             else{ // success
                 targetEquip.sfLevel++;
 
-                targetEquip.logs[processCount] = "success!";
+                targetEquip.logs[processCount] = "success! - "+targetEquip.sfLevel;
                 chanceTimeCount = 0;
             }
 
@@ -234,6 +236,7 @@ public class Process{ // main
 
                 if(safeDestroy == true){
                     targetEquip.spendMeso += starForceMoney_140lv[targetEquip.sfLevel];
+                    System.out.println("safe Destroy");
                 }
                 targetEquip.spendMeso += starForceMoney_140lv[targetEquip.sfLevel];
                 break;
